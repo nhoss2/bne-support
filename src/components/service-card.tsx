@@ -2,14 +2,27 @@ import type { EventData } from "@/types";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Clock, MapPin, Phone, Info } from "lucide-react";
 import { formatTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface ServiceCardProps {
   service: EventData;
+  isSelected?: boolean;
+  onSelect?: () => void;
 }
 
-export function ServiceCard({ service }: ServiceCardProps) {
+export function ServiceCard({
+  service,
+  isSelected,
+  onSelect,
+}: ServiceCardProps) {
   return (
-    <Card>
+    <Card
+      className={cn(
+        "transition-colors cursor-pointer hover:bg-secondary/50",
+        isSelected && "ring-2 ring-primary"
+      )}
+      onClick={onSelect}
+    >
       <CardHeader className="pb-2">
         <h3 className="text-xl font-bold leading-tight tracking-tight">
           {service.name}

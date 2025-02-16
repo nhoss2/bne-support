@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { EventData, ServiceType } from "./types";
 import { getServicesData } from "./lib/parse-csv";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,6 +29,13 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState(DAYS[today].full);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
+    null
+  );
+
+  const handleServiceSelect = useCallback((serviceId: string | null) => {
+    setSelectedServiceId(serviceId);
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -114,7 +121,12 @@ function App() {
                     </h2>
                     <div className="grid gap-6 @[800px]:grid-cols-2">
                       {services.map((service, index) => (
-                        <ServiceCard key={index} service={service} />
+                        <ServiceCard
+                          key={index}
+                          service={service}
+                          isSelected={selectedServiceId === service.name}
+                          onSelect={() => handleServiceSelect(service.name)}
+                        />
                       ))}
                     </div>
                   </section>
@@ -133,7 +145,11 @@ function App() {
         maxSize={60}
         className="hidden lg:block"
       >
-        <MapView services={filteredServices} />
+        <MapView
+          services={filteredServices}
+          selectedServiceId={selectedServiceId}
+          onMarkerSelect={handleServiceSelect}
+        />
       </ResizablePanel>
     </ResizablePanelGroup>
   );

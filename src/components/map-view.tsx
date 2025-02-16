@@ -1,17 +1,44 @@
-import { useMemo } from "react";
-import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import {
+  GoogleMap,
+  useLoadScript,
+  MarkerF,
+  InfoWindow,
+} from "@react-google-maps/api";
 import type { EventData } from "@/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Clock } from "lucide-react";
+import { formatTime } from "@/lib/utils";
 
 interface MapViewProps {
   services: EventData[];
+  selectedServiceId: string | null;
+  onMarkerSelect: (serviceId: string | null) => void;
 }
 
-export function MapView({ services }: MapViewProps) {
+export function MapView({
+  services,
+  selectedServiceId,
+  onMarkerSelect,
+}: MapViewProps) {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
+
+  const [activeMarker, setActiveMarker] = useState<string | null>(null);
+
+  // Update marker when selection changes from outside
+  useEffect(() => {
+    setActiveMarker(selectedServiceId);
+  }, [selectedServiceId]);
+
+  const handleMarkerClick = useCallback(
+    (serviceName: string) => {
+      setActiveMarker(serviceName);
+      onMarkerSelect(serviceName);
+    },
+    [onMarkerSelect]
+  );
 
   // Brisbane CBD coordinates
   const center = useMemo(() => ({ lat: -27.4698, lng: 153.0251 }), []);
@@ -52,6 +79,10 @@ export function MapView({ services }: MapViewProps) {
       zoom={13}
       center={center}
       mapContainerClassName="h-full w-full"
+      onClick={() => {
+        setActiveMarker(null);
+        onMarkerSelect(null);
+      }}
     >
       {services.map(
         (service, index) =>
@@ -60,7 +91,32 @@ export function MapView({ services }: MapViewProps) {
               key={index}
               position={service.location.coordinates}
               title={service.name}
-            />
+              onClick={() => handleMarkerClick(service.name)}
+            >
+              {activeMarker === service.name && (
+                <InfoWindow
+                  onCloseClick={() => {
+                    setActiveMarker(null);
+                    onMarkerSelect(null);
+                  }}
+                >
+                  <div className="min-w-[200px] p-3">
+                    <h3 className="font-semibold text-base mb-2">
+                      {service.name}
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Clock className="h-3.5 w-3.5" />
+                        <time>
+                          {formatTime(service.schedule.time.start)} -{" "}
+                          {formatTime(service.schedule.time.end)}
+                        </time>
+                      </div>
+                    </div>
+                  </div>
+                </InfoWindow>
+              )}
+            </MarkerF>
           )
       )}
     </GoogleMap>
