@@ -4,23 +4,14 @@ import { getServicesData } from "./lib/parse-csv";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServiceCard } from "@/components/service-card";
 import { DateTime } from "luxon";
-import { Button } from "@/components/ui/button";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
 import { MapView } from "@/components/map-view";
-
-const DAYS = [
-  { full: "Monday", short: "Mon" },
-  { full: "Tuesday", short: "Tue" },
-  { full: "Wednesday", short: "Wed" },
-  { full: "Thursday", short: "Thu" },
-  { full: "Friday", short: "Fri" },
-  { full: "Saturday", short: "Sat" },
-  { full: "Sunday", short: "Sun" },
-];
+import { DayPicker } from "@/components/day-picker";
+import { DAYS } from "@/lib/constants";
 
 function App() {
   const today = DateTime.now().weekday - 1;
@@ -83,7 +74,7 @@ function App() {
     <ResizablePanelGroup direction="horizontal" className="h-screen">
       <ResizablePanel defaultSize={60} minSize={30}>
         <div className="h-screen overflow-y-auto @container">
-          <div className="container p-4">
+          <div className="container pt-4 px-4">
             <header className="mb-8">
               <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
                 Brisbane Support Services
@@ -91,19 +82,10 @@ function App() {
               <p className="text-xl text-muted-foreground mb-6">
                 Find free food, support and medical services in Brisbane
               </p>
-              <div className="grid grid-cols-7 gap-1">
-                {DAYS.map((day) => (
-                  <Button
-                    key={day.full}
-                    onClick={() => setSelectedDay(day.full)}
-                    variant={selectedDay === day.full ? "default" : "secondary"}
-                    className="w-full text-sm shadow-none px-1 @[600px]:text-base"
-                  >
-                    <span className="block @[600px]:hidden">{day.short}</span>
-                    <span className="hidden @[600px]:block">{day.full}</span>
-                  </Button>
-                ))}
-              </div>
+              <DayPicker
+                selectedDay={selectedDay}
+                onDaySelect={setSelectedDay}
+              />
             </header>
 
             <main className="space-y-12">
@@ -133,6 +115,14 @@ function App() {
                 ))
               )}
             </main>
+
+            <footer className="mt-12 py-4 text-left px-4 text-sm text-white bg-black -mx-4">
+              Made by{" "}
+              <a href="https://www.nwcg.org.au/">
+                Northwest Community Group Inc
+              </a>{" "}
+              using Inner Brisbane Free Food Locations and Times Guide
+            </footer>
           </div>
         </div>
       </ResizablePanel>
