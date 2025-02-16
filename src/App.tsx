@@ -5,13 +5,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ServiceCard } from "@/components/service-card";
 
 const DAYS = [
-  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
   "Saturday",
+  "Sunday",
 ];
 
 function App() {
@@ -41,17 +41,20 @@ function App() {
     service.schedule.recurrence.daysOfWeek?.includes(selectedDay)
   );
 
-  const groupedServices = filteredServices.reduce((acc, service) => {
-    const type = service.type;
-    if (!acc[type]) acc[type] = [];
-    acc[type].push(service);
-    return acc;
-  }, {} as Record<ServiceType, EventData[]>);
+  const groupedServices = filteredServices.reduce(
+    (acc, service) => {
+      const type = service.type;
+      if (!acc[type]) acc[type] = [];
+      acc[type].push(service);
+      return acc;
+    },
+    {} as Record<ServiceType, EventData[]>
+  );
 
   if (loading)
     return (
       <div className="p-4 space-y-4">
-        <Skeleton className="h-8 w-[200px]" />
+        <Skeleton className="h-[80px] w-[400px]" />
         <Skeleton className="h-[200px] w-full" />
         <Skeleton className="h-[200px] w-full" />
       </div>
@@ -65,36 +68,47 @@ function App() {
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
           Brisbane Support Services
         </h1>
+        <p className="text-xl text-muted-foreground mb-6">
+          Find free food, support and medical services in Brisbane
+        </p>
         <div className="flex gap-2 overflow-x-auto pb-2">
           {DAYS.map((day) => (
             <button
               key={day}
               onClick={() => setSelectedDay(day)}
-              className={`px-3 py-1 rounded-md whitespace-nowrap ${
+              className={`px-4 py-2 rounded-md whitespace-nowrap text-lg ${
                 selectedDay === day
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary hover:bg-secondary/80"
+                  ? "bg-primary text-primary-foreground font-bold"
+                  : "bg-secondary"
               }`}
             >
-              {day.slice(0, 3)}
+              {day}
             </button>
           ))}
         </div>
       </header>
 
-      <main className="space-y-8">
-        {Object.entries(groupedServices).map(([type, services]) => (
-          <section key={type}>
-            <h2 className="text-2xl font-semibold tracking-tight mb-4">
-              {type}
-            </h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {services.map((service, index) => (
-                <ServiceCard key={index} service={service} />
-              ))}
-            </div>
-          </section>
-        ))}
+      <main className="space-y-12">
+        {Object.entries(groupedServices).length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-xl text-muted-foreground">
+              No services available on {selectedDay}
+            </p>
+          </div>
+        ) : (
+          Object.entries(groupedServices).map(([type, services]) => (
+            <section key={type}>
+              <h2 className="text-3xl font-semibold tracking-tight mb-6">
+                {type.charAt(0) + type.slice(1).toLowerCase()} Services
+              </h2>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {services.map((service, index) => (
+                  <ServiceCard key={index} service={service} />
+                ))}
+              </div>
+            </section>
+          ))
+        )}
       </main>
     </div>
   );
