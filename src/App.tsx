@@ -3,22 +3,26 @@ import type { EventData, ServiceType } from "./types";
 import { getServicesData } from "./lib/parse-csv";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServiceCard } from "@/components/service-card";
+import { DateTime } from "luxon";
+import { Button } from "@/components/ui/button";
 
 const DAYS = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
+  { full: "Monday", short: "Mon" },
+  { full: "Tuesday", short: "Tue" },
+  { full: "Wednesday", short: "Wed" },
+  { full: "Thursday", short: "Thu" },
+  { full: "Friday", short: "Fri" },
+  { full: "Saturday", short: "Sat" },
+  { full: "Sunday", short: "Sun" },
 ];
 
 function App() {
+  const today = DateTime.now().weekday - 1;
+
   const [services, setServices] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDay, setSelectedDay] = useState(DAYS[new Date().getDay()]);
+  const [selectedDay, setSelectedDay] = useState(DAYS[today].full);
 
   useEffect(() => {
     const loadData = async () => {
@@ -65,25 +69,23 @@ function App() {
   return (
     <div className="container mx-auto p-4">
       <header className="mb-8">
-        <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
+        <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
           Brisbane Support Services
         </h1>
         <p className="text-xl text-muted-foreground mb-6">
           Find free food, support and medical services in Brisbane
         </p>
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="flex gap-1 sm:gap-2 overflow-x-auto pb-2">
           {DAYS.map((day) => (
-            <button
-              key={day}
-              onClick={() => setSelectedDay(day)}
-              className={`px-4 py-2 rounded-md whitespace-nowrap text-lg ${
-                selectedDay === day
-                  ? "bg-primary text-primary-foreground font-bold"
-                  : "bg-secondary"
-              }`}
+            <Button
+              key={day.full}
+              onClick={() => setSelectedDay(day.full)}
+              variant={selectedDay === day.full ? "default" : "secondary"}
+              className="whitespace-nowrap text-sm sm:text-base shadow-none px-2.5 sm:px-4"
             >
-              {day}
-            </button>
+              <span className="block md:hidden">{day.short}</span>
+              <span className="hidden md:block">{day.full}</span>
+            </Button>
           ))}
         </div>
       </header>
