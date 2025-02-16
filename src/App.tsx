@@ -81,7 +81,7 @@ function App() {
       >
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="h-full overflow-y-auto">
-            <div className="p-4">
+            <div className="px-4 pt-4 pb-0 @container">
               <header className="mb-8">
                 <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
                   Brisbane Support Services
@@ -108,7 +108,7 @@ function App() {
                       <h2 className="text-3xl font-semibold tracking-tight mb-6">
                         {type.charAt(0) + type.slice(1).toLowerCase()} Services
                       </h2>
-                      <div className="grid gap-6 @[800px]:grid-cols-2">
+                      <div className="grid gap-6 @[600px]:grid-cols-2 @[1000px]:grid-cols-3">
                         {services.map((service, index) => (
                           <ServiceCard
                             key={index}
