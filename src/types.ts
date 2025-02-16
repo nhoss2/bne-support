@@ -29,6 +29,10 @@ export interface EventData {
   location: {
     address: string;
     suburb: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
   };
   schedule: {
     recurrence: RecurrenceRule;

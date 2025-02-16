@@ -10,6 +10,7 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
+import { MapView } from "@/components/map-view";
 
 const DAYS = [
   { full: "Monday", short: "Mon" },
@@ -73,7 +74,6 @@ function App() {
 
   return (
     <ResizablePanelGroup direction="horizontal" className="h-screen">
-      {/* Services List Panel */}
       <ResizablePanel defaultSize={60} minSize={30}>
         <div className="h-screen overflow-y-auto @container">
           <div className="container p-4">
@@ -125,19 +125,15 @@ function App() {
         </div>
       </ResizablePanel>
 
-      {/* Resizable Handle */}
       <ResizableHandle withHandle />
 
-      {/* Map Panel */}
       <ResizablePanel
         defaultSize={40}
         minSize={30}
         maxSize={60}
         className="hidden lg:block"
       >
-        <div className="h-full bg-muted flex items-center justify-center text-muted-foreground">
-          Map Placeholder
-        </div>
+        <MapView services={filteredServices} />
       </ResizablePanel>
     </ResizablePanelGroup>
   );
