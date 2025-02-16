@@ -5,6 +5,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ServiceCard } from "@/components/service-card";
 import { DateTime } from "luxon";
 import { Button } from "@/components/ui/button";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 
 const DAYS = [
   { full: "Monday", short: "Mon" },
@@ -67,52 +72,74 @@ function App() {
   if (error) return <div className="p-4 text-destructive">Error: {error}</div>;
 
   return (
-    <div className="container mx-auto p-4">
-      <header className="mb-8">
-        <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
-          Brisbane Support Services
-        </h1>
-        <p className="text-xl text-muted-foreground mb-6">
-          Find free food, support and medical services in Brisbane
-        </p>
-        <div className="flex gap-1 sm:gap-2 overflow-x-auto pb-2">
-          {DAYS.map((day) => (
-            <Button
-              key={day.full}
-              onClick={() => setSelectedDay(day.full)}
-              variant={selectedDay === day.full ? "default" : "secondary"}
-              className="whitespace-nowrap text-sm sm:text-base shadow-none px-2.5 sm:px-4"
-            >
-              <span className="block md:hidden">{day.short}</span>
-              <span className="hidden md:block">{day.full}</span>
-            </Button>
-          ))}
-        </div>
-      </header>
-
-      <main className="space-y-12">
-        {Object.entries(groupedServices).length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-xl text-muted-foreground">
-              No services available on {selectedDay}
-            </p>
-          </div>
-        ) : (
-          Object.entries(groupedServices).map(([type, services]) => (
-            <section key={type}>
-              <h2 className="text-3xl font-semibold tracking-tight mb-6">
-                {type.charAt(0) + type.slice(1).toLowerCase()} Services
-              </h2>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {services.map((service, index) => (
-                  <ServiceCard key={index} service={service} />
+    <ResizablePanelGroup direction="horizontal" className="h-screen">
+      {/* Services List Panel */}
+      <ResizablePanel defaultSize={60} minSize={30}>
+        <div className="h-screen overflow-y-auto @container">
+          <div className="container p-4">
+            <header className="mb-8">
+              <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
+                Brisbane Support Services
+              </h1>
+              <p className="text-xl text-muted-foreground mb-6">
+                Find free food, support and medical services in Brisbane
+              </p>
+              <div className="grid grid-cols-7 gap-1">
+                {DAYS.map((day) => (
+                  <Button
+                    key={day.full}
+                    onClick={() => setSelectedDay(day.full)}
+                    variant={selectedDay === day.full ? "default" : "secondary"}
+                    className="w-full text-sm shadow-none px-1 @[600px]:text-base"
+                  >
+                    <span className="block @[600px]:hidden">{day.short}</span>
+                    <span className="hidden @[600px]:block">{day.full}</span>
+                  </Button>
                 ))}
               </div>
-            </section>
-          ))
-        )}
-      </main>
-    </div>
+            </header>
+
+            <main className="space-y-12">
+              {Object.entries(groupedServices).length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-xl text-muted-foreground">
+                    No services available on {selectedDay}
+                  </p>
+                </div>
+              ) : (
+                Object.entries(groupedServices).map(([type, services]) => (
+                  <section key={type}>
+                    <h2 className="text-3xl font-semibold tracking-tight mb-6">
+                      {type.charAt(0) + type.slice(1).toLowerCase()} Services
+                    </h2>
+                    <div className="grid gap-6 @[800px]:grid-cols-2">
+                      {services.map((service, index) => (
+                        <ServiceCard key={index} service={service} />
+                      ))}
+                    </div>
+                  </section>
+                ))
+              )}
+            </main>
+          </div>
+        </div>
+      </ResizablePanel>
+
+      {/* Resizable Handle */}
+      <ResizableHandle withHandle />
+
+      {/* Map Panel */}
+      <ResizablePanel
+        defaultSize={40}
+        minSize={30}
+        maxSize={60}
+        className="hidden lg:block"
+      >
+        <div className="h-full bg-muted flex items-center justify-center text-muted-foreground">
+          Map Placeholder
+        </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 }
 
