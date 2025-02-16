@@ -12,6 +12,7 @@ import {
 import { MapView } from "@/components/map-view";
 import { DayPicker } from "@/components/day-picker";
 import { DAYS } from "@/lib/constants";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 function App() {
   const today = DateTime.now().weekday - 1;
@@ -23,6 +24,8 @@ function App() {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
     null
   );
+
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   const handleServiceSelect = useCallback((serviceId: string | null) => {
     setSelectedServiceId(serviceId);
@@ -71,77 +74,77 @@ function App() {
   if (error) return <div className="p-4 text-destructive">Error: {error}</div>;
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="h-screen">
-      <ResizablePanel defaultSize={60} minSize={30}>
-        <div className="h-screen overflow-y-auto @container">
-          <div className="container pt-4 px-4">
-            <header className="mb-8">
-              <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
-                Brisbane Support Services
-              </h1>
-              <p className="text-xl text-muted-foreground mb-6">
-                Find free food, support and medical services in Brisbane
-              </p>
-              <DayPicker
-                selectedDay={selectedDay}
-                onDaySelect={setSelectedDay}
-              />
-            </header>
-
-            <main className="space-y-12">
-              {Object.entries(groupedServices).length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-xl text-muted-foreground">
-                    No services available on {selectedDay}
-                  </p>
-                </div>
-              ) : (
-                Object.entries(groupedServices).map(([type, services]) => (
-                  <section key={type}>
-                    <h2 className="text-3xl font-semibold tracking-tight mb-6">
-                      {type.charAt(0) + type.slice(1).toLowerCase()} Services
-                    </h2>
-                    <div className="grid gap-6 @[800px]:grid-cols-2">
-                      {services.map((service, index) => (
-                        <ServiceCard
-                          key={index}
-                          service={service}
-                          isSelected={selectedServiceId === service.name}
-                          onSelect={() => handleServiceSelect(service.name)}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                ))
-              )}
-            </main>
-
-            <footer className="mt-12 py-4 text-left px-4 text-sm text-white bg-black -mx-4">
-              Made by{" "}
-              <a href="https://www.nwcg.org.au/">
-                Northwest Community Group Inc
-              </a>{" "}
-              using Inner Brisbane Free Food Locations and Times Guide
-            </footer>
-          </div>
-        </div>
-      </ResizablePanel>
-
-      <ResizableHandle withHandle />
-
-      <ResizablePanel
-        defaultSize={40}
-        minSize={30}
-        maxSize={60}
-        className="hidden lg:block"
+    <div className="h-[100dvh] overflow-hidden">
+      <ResizablePanelGroup
+        direction={isDesktop ? "horizontal" : "vertical"}
+        className="h-full"
       >
-        <MapView
-          services={filteredServices}
-          selectedServiceId={selectedServiceId}
-          onMarkerSelect={handleServiceSelect}
-        />
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        <ResizablePanel defaultSize={60} minSize={30}>
+          <div className="h-full overflow-y-auto">
+            <div className="p-4">
+              <header className="mb-8">
+                <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
+                  Brisbane Support Services
+                </h1>
+                <p className="text-xl text-muted-foreground mb-6">
+                  Find free food, support and medical services in Brisbane
+                </p>
+                <DayPicker
+                  selectedDay={selectedDay}
+                  onDaySelect={setSelectedDay}
+                />
+              </header>
+
+              <main className="space-y-12">
+                {Object.entries(groupedServices).length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-xl text-muted-foreground">
+                      No services available on {selectedDay}
+                    </p>
+                  </div>
+                ) : (
+                  Object.entries(groupedServices).map(([type, services]) => (
+                    <section key={type}>
+                      <h2 className="text-3xl font-semibold tracking-tight mb-6">
+                        {type.charAt(0) + type.slice(1).toLowerCase()} Services
+                      </h2>
+                      <div className="grid gap-6 @[800px]:grid-cols-2">
+                        {services.map((service, index) => (
+                          <ServiceCard
+                            key={index}
+                            service={service}
+                            isSelected={selectedServiceId === service.name}
+                            onSelect={() => handleServiceSelect(service.name)}
+                          />
+                        ))}
+                      </div>
+                    </section>
+                  ))
+                )}
+              </main>
+
+              <footer className="mt-12 py-4 px-4 text-sm text-white bg-black -mx-4">
+                Made by{" "}
+                <a href="https://www.nwcg.org.au/">
+                  Northwest Community Group Inc
+                </a>{" "}
+                using Inner Brisbane Free Food Locations and Times Guide
+              </footer>
+            </div>
+          </div>
+        </ResizablePanel>
+
+        <ResizableHandle withHandle className="border border-gray-300" />
+
+        <ResizablePanel defaultSize={40} minSize={30} maxSize={60}>
+          <MapView
+            services={filteredServices}
+            selectedServiceId={selectedServiceId}
+            onMarkerSelect={handleServiceSelect}
+          />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
   );
 }
 
