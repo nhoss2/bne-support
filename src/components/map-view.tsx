@@ -53,16 +53,16 @@ export function MapView({ services }: MapViewProps) {
       center={center}
       mapContainerClassName="h-full w-full"
     >
-      {services.map((service, index) => (
-        <MarkerF
-          key={index}
-          position={{
-            lat: -27.4698,
-            lng: 153.0251,
-          }}
-          title={service.name}
-        />
-      ))}
+      {services.map(
+        (service, index) =>
+          service.location.coordinates && (
+            <MarkerF
+              key={index}
+              position={service.location.coordinates}
+              title={service.name}
+            />
+          )
+      )}
     </GoogleMap>
   );
 }

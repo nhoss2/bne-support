@@ -1,4 +1,4 @@
-import { parse } from "papaparse";
+import Papa from "papaparse";
 import type { EventData, ServiceType, RecurrenceRule } from "../types";
 import { getSheetCsv } from "./load-sheets";
 
@@ -33,7 +33,7 @@ function parseRecurrencePattern(days: string): RecurrenceRule {
   };
 }
 
-interface RawServiceData {
+export interface RawServiceData {
   name: string;
   type: string;
   address: string;
@@ -46,10 +46,12 @@ interface RawServiceData {
   requirements: string;
   phone: string;
   notes: string;
+  latitude?: string;
+  longitude?: string;
 }
 
 export function parseServicesCSV(csvContent: string): EventData[] {
-  const { data } = parse<RawServiceData>(csvContent, {
+  const { data } = Papa.parse<RawServiceData>(csvContent, {
     header: true,
     skipEmptyLines: true,
   });
@@ -60,12 +62,21 @@ export function parseServicesCSV(csvContent: string): EventData[] {
       ? row.exclusions.split(",").map((e: string) => e.trim())
       : undefined;
 
+    const coordinates =
+      row.latitude && row.longitude
+        ? {
+            lat: parseFloat(row.latitude),
+            lng: parseFloat(row.longitude),
+          }
+        : undefined;
+
     const parsed = {
       name: row.name,
       type: row.type as ServiceType,
       location: {
         address: row.address,
         suburb: row.suburb,
+        coordinates,
       },
       schedule: {
         recurrence: parseRecurrencePattern(row.days),
