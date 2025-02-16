@@ -28,7 +28,7 @@ export interface EventData {
   type: ServiceType;
   location: {
     address: string;
-    area: string;
+    suburb: string;
   };
   schedule: {
     recurrence: RecurrenceRule;

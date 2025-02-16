@@ -37,7 +37,7 @@ interface RawServiceData {
   name: string;
   type: string;
   address: string;
-  area: string;
+  suburb: string;
   days: string;
   start_time: string;
   end_time: string;
@@ -60,12 +60,12 @@ export function parseServicesCSV(csvContent: string): EventData[] {
       ? row.exclusions.split(",").map((e: string) => e.trim())
       : undefined;
 
-    return {
+    const parsed = {
       name: row.name,
       type: row.type as ServiceType,
       location: {
         address: row.address,
-        area: row.area,
+        suburb: row.suburb,
       },
       schedule: {
         recurrence: parseRecurrencePattern(row.days),
@@ -80,6 +80,8 @@ export function parseServicesCSV(csvContent: string): EventData[] {
       phone: row.phone || undefined,
       notes: row.notes || undefined,
     };
+
+    return parsed;
   });
 }
 

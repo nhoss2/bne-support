@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import type { EventData, ServiceType } from "./types";
 import { getServicesData } from "./lib/parse-csv";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ServiceCard } from "@/components/service-card";
 
 const DAYS = [
   "Sunday",
@@ -90,40 +90,7 @@ function App() {
             </h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {services.map((service, index) => (
-                <Card key={index}>
-                  <CardHeader>
-                    <h3 className="text-lg font-bold leading-none tracking-tight">
-                      {service.name}
-                    </h3>
-                    <time className="text-sm text-muted-foreground">
-                      {service.schedule.time.start} -{" "}
-                      {service.schedule.time.end}
-                    </time>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2.5">
-                      <address className="text-sm not-italic">
-                        <span className="text-muted-foreground">
-                          {service.location.address}
-                          {service.location.address && ", "}
-                          <span className="font-medium text-foreground">
-                            {service.location.area}
-                          </span>
-                        </span>
-                      </address>
-                      {service.services.length > 0 && (
-                        <p className="text-sm leading-relaxed">
-                          {service.services.join(", ")}
-                        </p>
-                      )}
-                      {service.notes && (
-                        <p className="text-sm text-muted-foreground italic leading-normal">
-                          {service.notes}
-                        </p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <ServiceCard key={index} service={service} />
               ))}
             </div>
           </section>
