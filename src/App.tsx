@@ -19,8 +19,8 @@ const ViewToggle = memo(function ViewToggle({
 }) {
   return (
     <Button
-      variant="ghost"
-      className="h-16 fixed bottom-0 inset-x-0 transition-colors rounded-none bg-black text-white lg:hidden"
+      variant="default"
+      className="h-16 fixed bottom-0 inset-x-0 transition-colors lg:hidden rounded-none hover:bg-black hover:opacity-100"
       onClick={() => onToggle(!showMap)}
     >
       {showMap ? (
@@ -53,7 +53,7 @@ const ServiceList = memo(function ServiceList({
 }) {
   return (
     <div className="h-full overflow-y-auto">
-      <div className="px-4 pt-4 pb-16 @container">
+      <div className="px-4 pt-4 pb-16 lg:pb-0 @container">
         <header className="mb-8">
           <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
             Brisbane Support Services
@@ -170,10 +170,10 @@ function App() {
 
   return (
     <div className="h-[100dvh] overflow-hidden relative">
-      <div className="h-[calc(100%-4rem)] grid lg:grid-cols-[60%_40%]">
+      <div className="h-full grid lg:grid-cols-[60%_40%] overflow-hidden">
         {/* List View */}
         <div
-          className={`h-full lg:relative absolute inset-0 transition-transform duration-300 ${
+          className={`h-full lg:relative absolute inset-0 transition-transform duration-300 overflow-hidden ${
             showMap ? "translate-x-full lg:translate-x-0" : "translate-x-0"
           }`}
         >
