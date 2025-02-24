@@ -7,8 +7,11 @@ import {
 } from "@react-google-maps/api";
 import type { EventData } from "@/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, Clock } from "lucide-react";
+import { AlertTriangle, Clock, Crosshair } from "lucide-react";
 import { formatTime } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import { cn } from "@/lib/utils";
 
 interface MapViewProps {
   services: EventData[];
@@ -52,19 +55,43 @@ export function MapView({
       gestureHandling: "greedy",
       minZoom: 11,
       maxZoom: 18,
-      // Set initial viewport bounds
-      restriction: {
-        latLngBounds: {
-          north: -27.3,
-          south: -27.6,
-          east: 153.2,
-          west: 152.9,
-        },
-        strictBounds: false,
-      },
     }),
     []
   );
+
+  const [userLocation, setUserLocation] =
+    useState<google.maps.LatLngLiteral | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  const isMobile = useIsMobile();
+
+  const handleLocationRequest = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        setUserLocation(location);
+        setLocationError(null);
+
+        // Pan map to user location
+        if (map) {
+          map.panTo(location);
+          map.setZoom(15);
+        }
+      },
+      (error) => {
+        setLocationError("Unable to get your location");
+        console.error("Geolocation error:", error);
+      }
+    );
+  };
 
   if (loadError) {
     return (
@@ -88,48 +115,89 @@ export function MapView({
   }
 
   return (
-    <GoogleMap
-      options={mapOptions}
-      zoom={15}
-      center={defaultCenter}
-      mapContainerClassName="h-full w-full"
-      onClick={() => onMarkerSelect(null)}
-      onLoad={setMap}
-    >
-      {services.map(
-        (service, index) =>
-          service.location.coordinates && (
-            <MarkerF
-              key={index}
-              position={service.location.coordinates}
-              title={service.name}
-              onClick={() => onMarkerSelect(service.name)}
-            >
-              {selectedServiceId === service.name && (
-                <InfoWindow
-                  onCloseClick={() => {
-                    onMarkerSelect(null);
-                  }}
-                >
-                  <div className="min-w-[200px] p-3">
-                    <h3 className="font-semibold text-base mb-2">
-                      {service.name}
-                    </h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Clock className="h-3.5 w-3.5" />
-                        <time>
-                          {formatTime(service.schedule.time.start)} -{" "}
-                          {formatTime(service.schedule.time.end)}
-                        </time>
+    <div className="h-full w-full relative">
+      <GoogleMap
+        options={mapOptions}
+        zoom={15}
+        center={defaultCenter}
+        mapContainerClassName="h-full w-full"
+        onClick={() => onMarkerSelect(null)}
+        onLoad={setMap}
+      >
+        {services.map(
+          (service, index) =>
+            service.location.coordinates && (
+              <MarkerF
+                key={index}
+                position={service.location.coordinates}
+                title={service.name}
+                onClick={() => onMarkerSelect(service.name)}
+              >
+                {selectedServiceId === service.name && (
+                  <InfoWindow
+                    onCloseClick={() => {
+                      onMarkerSelect(null);
+                    }}
+                  >
+                    <div className="min-w-[200px] p-3">
+                      <h3 className="font-semibold text-base mb-2">
+                        {service.name}
+                      </h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Clock className="h-3.5 w-3.5" />
+                          <time>
+                            {formatTime(service.schedule.time.start)} -{" "}
+                            {formatTime(service.schedule.time.end)}
+                          </time>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </InfoWindow>
-              )}
-            </MarkerF>
-          )
+                  </InfoWindow>
+                )}
+              </MarkerF>
+            )
+        )}
+
+        {userLocation && (
+          <MarkerF
+            position={userLocation}
+            icon={{
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: "#4285F4",
+              fillOpacity: 1,
+              strokeColor: "#ffffff",
+              strokeWeight: 2,
+            }}
+            title="Your location"
+          />
+        )}
+      </GoogleMap>
+
+      <Button
+        variant="default"
+        size="icon"
+        className={cn(
+          "absolute right-4 h-10 w-10 shadow-md",
+          isMobile ? "bottom-20" : "bottom-4"
+        )}
+        onClick={handleLocationRequest}
+      >
+        <Crosshair className="h-4 w-4" />
+      </Button>
+
+      {locationError && (
+        <Alert
+          variant="destructive"
+          className={cn(
+            "absolute right-4 w-auto max-w-[300px]",
+            isMobile ? "bottom-32" : "bottom-16"
+          )}
+        >
+          <AlertDescription>{locationError}</AlertDescription>
+        </Alert>
       )}
-    </GoogleMap>
+    </div>
   );
 }

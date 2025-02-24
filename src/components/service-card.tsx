@@ -46,7 +46,7 @@ export function ServiceCard({
         <div className="space-y-4">
           <button
             onClick={handleAddressClick}
-            className="flex items-start gap-2 not-italic w-full text-left p-2 -m-2 rounded-md"
+            className="flex items-start gap-2 not-italic w-full text-left p-2 mb-1 -m-2 rounded-md"
           >
             <MapPin className="h-4 w-4 mt-1 shrink-0 text-blue-600" />
             <span className="text-base text-blue-600 underline">
