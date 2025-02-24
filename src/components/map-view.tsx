@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   GoogleMap,
   useLoadScript,
@@ -25,29 +25,43 @@ export function MapView({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
 
-  const [activeMarker, setActiveMarker] = useState<string | null>(null);
-
-  // Update marker when selection changes from outside
-  useEffect(() => {
-    setActiveMarker(selectedServiceId);
-  }, [selectedServiceId]);
-
-  const handleMarkerClick = useCallback(
-    (serviceName: string) => {
-      setActiveMarker(serviceName);
-      onMarkerSelect(serviceName);
-    },
-    [onMarkerSelect]
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const selectedService = services.find(
+    (service) => service.name === selectedServiceId
   );
 
   // Brisbane CBD coordinates
-  const center = useMemo(() => ({ lat: -27.4698, lng: 153.0251 }), []);
+  const defaultCenter = useMemo(() => ({ lat: -27.4698, lng: 153.0251 }), []);
+
+  // Center map on selected service when it changes
+  useEffect(() => {
+    if (map && selectedService?.location.coordinates) {
+      const center = selectedService.location.coordinates;
+      map.panTo({
+        lat: center.lat - 0.003, // Offset to account for InfoWindow
+        lng: center.lng,
+      });
+    }
+  }, [selectedServiceId, map, selectedService]);
 
   const mapOptions = useMemo(
     () => ({
       disableDefaultUI: true,
       clickableIcons: false,
       scrollwheel: true,
+      gestureHandling: "greedy",
+      minZoom: 11,
+      maxZoom: 18,
+      // Set initial viewport bounds
+      restriction: {
+        latLngBounds: {
+          north: -27.3,
+          south: -27.6,
+          east: 153.2,
+          west: 152.9,
+        },
+        strictBounds: false,
+      },
     }),
     []
   );
@@ -76,13 +90,11 @@ export function MapView({
   return (
     <GoogleMap
       options={mapOptions}
-      zoom={13}
-      center={center}
+      zoom={15}
+      center={defaultCenter}
       mapContainerClassName="h-full w-full"
-      onClick={() => {
-        setActiveMarker(null);
-        onMarkerSelect(null);
-      }}
+      onClick={() => onMarkerSelect(null)}
+      onLoad={setMap}
     >
       {services.map(
         (service, index) =>
@@ -91,12 +103,11 @@ export function MapView({
               key={index}
               position={service.location.coordinates}
               title={service.name}
-              onClick={() => handleMarkerClick(service.name)}
+              onClick={() => onMarkerSelect(service.name)}
             >
-              {activeMarker === service.name && (
+              {selectedServiceId === service.name && (
                 <InfoWindow
                   onCloseClick={() => {
-                    setActiveMarker(null);
                     onMarkerSelect(null);
                   }}
                 >

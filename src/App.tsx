@@ -9,6 +9,7 @@ import { DayPicker } from "@/components/day-picker";
 import { DAYS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Map, List } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 const ViewToggle = memo(function ViewToggle({
   showMap,
@@ -44,27 +45,34 @@ const ServiceList = memo(function ServiceList({
   selectedServiceId,
   onDaySelect,
   onServiceSelect,
+  onShowMap,
 }: {
   groupedServices: Record<ServiceType, EventData[]>;
   selectedDay: string;
   selectedServiceId: string | null;
   onDaySelect: (day: string) => void;
   onServiceSelect: (serviceId: string | null) => void;
+  onShowMap: () => void;
 }) {
+  const isMobile = useIsMobile();
+
   return (
     <div className="h-full overflow-y-auto">
-      <div className="px-4 pt-4 pb-16 lg:pb-0 @container">
-        <header className="mb-8">
+      <div className="px-4 pt-4 pb-16 lg:pb-0 @container min-h-full">
+        <header className="mb-4">
           <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
             Brisbane Support Services
           </h1>
-          <p className="text-xl text-muted-foreground mb-6">
+          <p className="text-xl text-muted-foreground">
             Find free food, support and medical services in Brisbane
           </p>
-          <DayPicker selectedDay={selectedDay} onDaySelect={onDaySelect} />
         </header>
 
-        <main className="space-y-12">
+        <div className="sticky top-0 bg-background py-4 -mx-4 px-4 z-20 border-b">
+          <DayPicker selectedDay={selectedDay} onDaySelect={onDaySelect} />
+        </div>
+
+        <main className="space-y-12 mt-4">
           {Object.entries(groupedServices).length === 0 ? (
             <div className="text-center py-12">
               <p className="text-xl text-muted-foreground">
@@ -74,16 +82,24 @@ const ServiceList = memo(function ServiceList({
           ) : (
             Object.entries(groupedServices).map(([type, services]) => (
               <section key={type}>
-                <h2 className="text-3xl font-semibold tracking-tight mb-6">
-                  {type.charAt(0) + type.slice(1).toLowerCase()} Services
-                </h2>
-                <div className="grid gap-6 @[600px]:grid-cols-2 @[1000px]:grid-cols-3">
+                <div className="sticky top-[68px] bg-background py-4 -mx-4 px-4 z-10 border-b">
+                  <h2 className="text-3xl font-semibold tracking-tight">
+                    {type.charAt(0) + type.slice(1).toLowerCase()} Services
+                  </h2>
+                </div>
+                <div className="grid gap-6 @[600px]:grid-cols-2 @[1000px]:grid-cols-3 mt-6">
                   {services.map((service, index) => (
                     <ServiceCard
                       key={index}
                       service={service}
                       isSelected={selectedServiceId === service.name}
-                      onSelect={() => onServiceSelect(service.name)}
+                      onSelect={() => {
+                        onServiceSelect(service.name);
+                        if (isMobile) {
+                          onShowMap();
+                        }
+                      }}
+                      onShowMap={onShowMap}
                     />
                   ))}
                 </div>
@@ -113,10 +129,17 @@ function App() {
     null
   );
   const [showMap, setShowMap] = useState(false);
+  const isMobile = useIsMobile();
 
-  const handleServiceSelect = useCallback((serviceId: string | null) => {
-    setSelectedServiceId(serviceId);
-  }, []);
+  const handleServiceSelect = useCallback(
+    (serviceId: string | null) => {
+      setSelectedServiceId(serviceId);
+      if (!isMobile) {
+        setShowMap(true);
+      }
+    },
+    [isMobile]
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -171,7 +194,6 @@ function App() {
   return (
     <div className="h-[100dvh] overflow-hidden relative">
       <div className="h-full grid lg:grid-cols-[60%_40%] overflow-hidden">
-        {/* List View */}
         <div
           className={`h-full lg:relative absolute inset-0 transition-transform duration-300 overflow-hidden ${
             showMap ? "translate-x-full lg:translate-x-0" : "translate-x-0"
@@ -183,10 +205,9 @@ function App() {
             selectedServiceId={selectedServiceId}
             onDaySelect={setSelectedDay}
             onServiceSelect={handleServiceSelect}
+            onShowMap={() => setShowMap(true)}
           />
         </div>
-
-        {/* Map View */}
         <div
           className={`h-full lg:relative absolute inset-0 transition-transform duration-300 ${
             showMap ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
