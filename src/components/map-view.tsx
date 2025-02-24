@@ -7,7 +7,14 @@ import {
 } from "@react-google-maps/api";
 import type { EventData } from "@/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, Clock, Crosshair } from "lucide-react";
+import {
+  AlertTriangle,
+  Clock,
+  Crosshair,
+  Info,
+  AlertCircle,
+  MapPin,
+} from "lucide-react";
 import { formatTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-is-mobile";
@@ -130,7 +137,6 @@ export function MapView({
               <MarkerF
                 key={index}
                 position={service.location.coordinates}
-                title={service.name}
                 onClick={() => onMarkerSelect(service.name)}
               >
                 {selectedServiceId === service.name && (
@@ -138,19 +144,51 @@ export function MapView({
                     onCloseClick={() => {
                       onMarkerSelect(null);
                     }}
+                    options={{
+                      headerContent: (() => {
+                        const div = document.createElement("div");
+                        div.style.fontWeight = "bold";
+                        div.textContent = service.name;
+                        return div;
+                      })(),
+                    }}
                   >
-                    <div className="min-w-[200px] p-3">
-                      <h3 className="font-semibold text-base mb-2">
-                        {service.name}
-                      </h3>
+                    <div className="min-w-[200px] max-w-[300px]">
                       <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <Clock className="h-3.5 w-3.5" />
-                          <time>
+                        <div className="flex gap-2">
+                          <Clock className="h-4 w-4 shrink-0" />
+                          <time className="text-muted-foreground">
                             {formatTime(service.schedule.time.start)} -{" "}
                             {formatTime(service.schedule.time.end)}
                           </time>
                         </div>
+                        {service.services.length > 0 && (
+                          <div className="flex gap-2">
+                            <Info className="h-4 w-4 shrink-0" />
+                            <p className="text-muted-foreground">
+                              {service.services.join(", ")}
+                            </p>
+                          </div>
+                        )}
+                        {service.notes && (
+                          <div className="flex gap-2">
+                            <AlertCircle className="h-4 w-4 shrink-0" />
+                            <p className="text-muted-foreground">
+                              {service.notes}
+                            </p>
+                          </div>
+                        )}
+                        <a
+                          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                            `${service.location.address}, ${service.location.suburb}, QLD`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-blue-600 hover:underline mt-2"
+                        >
+                          <MapPin className="h-4 w-4 shrink-0" />
+                          Get Directions
+                        </a>
                       </div>
                     </div>
                   </InfoWindow>

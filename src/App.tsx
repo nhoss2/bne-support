@@ -61,7 +61,7 @@ const ServiceList = memo(function ServiceList({
       <div className="px-4 pt-4 pb-16 lg:pb-0 @container min-h-full">
         <header className="mb-4">
           <h1 className="scroll-m-20 text-3xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
-            Brisbane Support Services
+            Brisbane Support Hub
           </h1>
           <p className="text-xl text-muted-foreground">
             Find free food, support and medical services in Brisbane
