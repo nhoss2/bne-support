@@ -19,17 +19,22 @@ import { formatTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { cn } from "@/lib/utils";
+import { DayPicker } from "@/components/day-picker";
 
 interface MapViewProps {
   services: EventData[];
   selectedServiceId: string | null;
   onMarkerSelect: (serviceId: string | null) => void;
+  selectedDay?: string;
+  onDaySelect?: (day: string) => void;
 }
 
 export function MapView({
   services,
   selectedServiceId,
   onMarkerSelect,
+  selectedDay,
+  onDaySelect,
 }: MapViewProps) {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -123,11 +128,20 @@ export function MapView({
 
   return (
     <div className="h-full w-full relative">
+      {isMobile && selectedDay && onDaySelect && (
+        <div className="absolute top-0 left-0 right-0 z-10 bg-background py-2 px-4 border-b">
+          <DayPicker selectedDay={selectedDay} onDaySelect={onDaySelect} />
+        </div>
+      )}
+
       <GoogleMap
         options={mapOptions}
         zoom={15}
         center={defaultCenter}
-        mapContainerClassName="h-full w-full"
+        mapContainerClassName={cn(
+          "h-full w-full",
+          isMobile && selectedDay && "pt-[68px]"
+        )}
         onClick={() => onMarkerSelect(null)}
         onLoad={setMap}
       >

@@ -141,6 +141,11 @@ function App() {
     [isMobile]
   );
 
+  const handleDaySelect = useCallback((day: string) => {
+    setSelectedDay(day);
+    setSelectedServiceId(null); // Clear the selected service when changing days
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -188,6 +193,8 @@ function App() {
       services={filteredServices}
       selectedServiceId={selectedServiceId}
       onMarkerSelect={handleServiceSelect}
+      selectedDay={selectedDay}
+      onDaySelect={handleDaySelect}
     />
   );
 
@@ -203,7 +210,7 @@ function App() {
             groupedServices={groupedServices}
             selectedDay={selectedDay}
             selectedServiceId={selectedServiceId}
-            onDaySelect={setSelectedDay}
+            onDaySelect={handleDaySelect}
             onServiceSelect={handleServiceSelect}
             onShowMap={() => setShowMap(true)}
           />
