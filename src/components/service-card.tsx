@@ -1,6 +1,6 @@
 import type { EventData } from "@/types";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Clock, MapPin, Phone, Info } from "lucide-react";
+import { Clock, MapPin, Phone, Info, CalendarX } from "lucide-react";
 import { formatTime } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-is-mobile";
@@ -84,6 +84,16 @@ export function ServiceCard({
               </p>
             </div>
           )}
+
+          {service.schedule.exclusions &&
+            service.schedule.exclusions.length > 0 && (
+              <div className="flex items-start gap-2">
+                <CalendarX className="h-4 w-4 mt-1 shrink-0 text-yellow-600" />
+                <p className="text-base text-yellow-600 leading-normal">
+                  Excluded: {service.schedule.exclusions.join(", ")}
+                </p>
+              </div>
+            )}
         </div>
       </CardContent>
     </Card>
