@@ -5,7 +5,7 @@ import {
   MarkerF,
   InfoWindow,
 } from "@react-google-maps/api";
-import type { EventData } from "@/types";
+import type { EventData, ServiceType } from "@/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   AlertTriangle,
@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { cn } from "@/lib/utils";
 import { DayPicker } from "@/components/day-picker";
+import { ServiceTypePicker } from "@/components/service-type-picker";
 
 interface MapViewProps {
   services: EventData[];
@@ -27,6 +28,8 @@ interface MapViewProps {
   onMarkerSelect: (serviceId: string | null) => void;
   selectedDay?: string;
   onDaySelect?: (day: string) => void;
+  selectedServiceType?: ServiceType;
+  onServiceTypeSelect?: (type: ServiceType) => void;
 }
 
 export function MapView({
@@ -35,6 +38,8 @@ export function MapView({
   onMarkerSelect,
   selectedDay,
   onDaySelect,
+  selectedServiceType,
+  onServiceTypeSelect,
 }: MapViewProps) {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -129,8 +134,14 @@ export function MapView({
   return (
     <div className="h-full w-full relative">
       {isMobile && selectedDay && onDaySelect && (
-        <div className="absolute top-0 left-0 right-0 z-10 bg-background py-2 px-4 border-b">
+        <div className="absolute top-0 left-0 right-0 z-10 bg-background py-2 px-4 border-b space-y-2">
           <DayPicker selectedDay={selectedDay} onDaySelect={onDaySelect} />
+          {selectedServiceType && onServiceTypeSelect && (
+            <ServiceTypePicker
+              selectedServiceType={selectedServiceType}
+              onServiceTypeSelect={onServiceTypeSelect}
+            />
+          )}
         </div>
       )}
 
@@ -140,7 +151,8 @@ export function MapView({
         center={defaultCenter}
         mapContainerClassName={cn(
           "h-full w-full",
-          isMobile && selectedDay && "pt-[68px]"
+          isMobile && selectedDay && selectedServiceType && "pt-[120px]",
+          isMobile && selectedDay && !selectedServiceType && "pt-[68px]"
         )}
         onClick={() => onMarkerSelect(null)}
         onLoad={setMap}
