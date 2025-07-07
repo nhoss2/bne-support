@@ -184,7 +184,8 @@ function App() {
     const matchesDay =
       service.schedule.recurrence.daysOfWeek?.includes(selectedDay);
     const matchesServiceType =
-      service.type === selectedServiceType || service.type === "MIXED"; // Include MIXED services with the selected type
+      service.types.includes(selectedServiceType) ||
+      service.types.includes("MIXED"); // Include MIXED services with the selected type
 
     return matchesDay && matchesServiceType;
   });

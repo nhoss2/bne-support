@@ -70,10 +70,13 @@ export function parseServicesCSV(csvContent: string): EventData[] {
           }
         : undefined;
 
+    // Support multiple categories per service
+    const types = row.type.split(",").map((t) => t.trim() as ServiceType);
+
     const parsed = {
       id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${index}`,
       name: row.name,
-      type: row.type as ServiceType,
+      types,
       location: {
         address: row.address,
         suburb: row.suburb,

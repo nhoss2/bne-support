@@ -27,7 +27,7 @@ export interface EventData {
   /** A unique identifier generated when the CSV is parsed */
   id: string;
   name: string;
-  type: ServiceType;
+  types: ServiceType[];
   location: {
     address: string;
     suburb: string;
