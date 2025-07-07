@@ -47,7 +47,7 @@ export function MapView({
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const selectedService = services.find(
-    (service) => service.name === selectedServiceId
+    (service) => service.id === selectedServiceId
   );
 
   // Brisbane CBD coordinates
@@ -158,14 +158,14 @@ export function MapView({
         onLoad={setMap}
       >
         {services.map(
-          (service, index) =>
+          (service) =>
             service.location.coordinates && (
               <MarkerF
-                key={index}
+                key={service.id}
                 position={service.location.coordinates}
-                onClick={() => onMarkerSelect(service.name)}
+                onClick={() => onMarkerSelect(service.id)}
               >
-                {selectedServiceId === service.name && (
+                {selectedServiceId === service.id && (
                   <InfoWindow
                     onCloseClick={() => {
                       onMarkerSelect(null);

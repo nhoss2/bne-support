@@ -56,7 +56,7 @@ export function parseServicesCSV(csvContent: string): EventData[] {
     skipEmptyLines: true,
   });
 
-  return data.map((row): EventData => {
+  return data.map((row, index): EventData => {
     const services = row.services.split(",").map((s: string) => s.trim());
     const exclusions = row.exclusions
       ? row.exclusions.split(",").map((e: string) => e.trim())
@@ -71,6 +71,7 @@ export function parseServicesCSV(csvContent: string): EventData[] {
         : undefined;
 
     const parsed = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${index}`,
       name: row.name,
       type: row.type as ServiceType,
       location: {

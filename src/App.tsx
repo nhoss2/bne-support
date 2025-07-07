@@ -99,13 +99,13 @@ const ServiceList = memo(function ServiceList({
                 </h2>
               </div>
               <div className="grid gap-6 @[600px]:grid-cols-2 @[1000px]:grid-cols-3 mt-6">
-                {services.map((service, index) => (
+                {services.map((service) => (
                   <ServiceCard
-                    key={index}
+                    key={service.id}
                     service={service}
-                    isSelected={selectedServiceId === service.name}
+                    isSelected={selectedServiceId === service.id}
                     onSelect={() => {
-                      onServiceSelect(service.name);
+                      onServiceSelect(service.id);
                       if (isMobile) {
                         onShowMap();
                       }

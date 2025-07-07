@@ -20,8 +20,7 @@ export function ServiceCard({
 }: ServiceCardProps) {
   const isMobile = useIsMobile();
 
-  const handleAddressClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleCardClick = () => {
     onSelect?.();
     if (isMobile) {
       onShowMap();
@@ -29,7 +28,10 @@ export function ServiceCard({
   };
 
   return (
-    <Card className={cn(isSelected && "ring-2 ring-primary")}>
+    <Card
+      onClick={handleCardClick}
+      className={cn("cursor-pointer", isSelected && "ring-2 ring-primary")}
+    >
       <CardHeader className="pb-2">
         <h3 className="text-xl font-bold leading-tight tracking-tight">
           {service.name}
@@ -44,17 +46,14 @@ export function ServiceCard({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <button
-            onClick={handleAddressClick}
-            className="flex items-start gap-2 not-italic w-full text-left p-2 mb-1 -m-2 rounded-md"
-          >
+          <div className="flex items-start gap-2 not-italic w-full text-left p-2 mb-1 -m-2 rounded-md">
             <MapPin className="h-4 w-4 mt-1 shrink-0 text-blue-600" />
             <span className="text-base text-blue-600 underline">
               {service.location.address}
               {service.location.address && ", "}
               <span className="font-medium">{service.location.suburb}</span>
             </span>
-          </button>
+          </div>
 
           {service.phone && (
             <div className="flex items-center gap-2">
@@ -62,6 +61,7 @@ export function ServiceCard({
               <a
                 href={`tel:${service.phone}`}
                 className="text-base text-primary hover:underline"
+                onClick={(e) => e.stopPropagation()}
               >
                 {service.phone}
               </a>
