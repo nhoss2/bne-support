@@ -25,13 +25,33 @@ export function ReportNotHereDialog({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [comment, setComment] = useState("");
 
-  const handleSubmit = () => {
-    console.log("Report Not Here", {
-      serviceId: service.id,
-      serviceName: service.name,
-      comment,
-    });
-    // TODO: Send email notification to admins
+  const handleSubmit = async () => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8787';
+      const response = await fetch(`${apiUrl}/api/reports`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          serviceId: service.id,
+          serviceName: service.name,
+          serviceAddress: service.location.address,
+          serviceLatitude: service.location.coordinates?.lat,
+          serviceLongitude: service.location.coordinates?.lng,
+          comment,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Report submitted successfully');
+      } else {
+        console.error('Failed to submit report');
+      }
+    } catch (error) {
+      console.error('Error submitting report:', error);
+    }
+
     setDialogOpen(false);
     setComment("");
   };

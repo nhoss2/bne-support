@@ -1,0 +1,15 @@
+name = "bne-support-api"
+main = "api/src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+minify = true
+
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bne-support-db"
+database_id = "65e89972-f39a-47f7-b974-a639b7fbc08f"
+migrations_dir = "api/migrations"
+
+[env.development]
+name = "bne-support-api-dev"
