@@ -1,9 +1,12 @@
 import type { EventData } from "@/types";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Clock, MapPin, Phone, Info, CalendarX } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ReportNotHereDialog } from "@/components/report-not-here-dialog";
+import { Clock, MapPin, Phone, Info, CalendarX, Flag } from "lucide-react";
 import { formatTime } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import { useState } from "react";
 
 interface ServiceCardProps {
   service: EventData;
@@ -20,7 +23,13 @@ export function ServiceCard({
 }: ServiceCardProps) {
   const isMobile = useIsMobile();
 
+  const [reportClicked, setReportClicked] = useState(false);
+
   const handleCardClick = () => {
+    if (reportClicked) {
+      setReportClicked(false);
+      return;
+    }
     onSelect?.();
     if (isMobile) {
       onShowMap();
@@ -94,6 +103,25 @@ export function ServiceCard({
                 </p>
               </div>
             )}
+          {/* Report not here */}
+          <div>
+            <ReportNotHereDialog
+              service={service}
+              triggerElement={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setReportClicked(true);
+                  }}
+                >
+                  <Flag className="mr-2 h-4 w-4" />
+                  Report Not Here
+                </Button>
+              }
+            />
+          </div>
         </div>
       </CardContent>
     </Card>

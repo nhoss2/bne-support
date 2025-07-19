@@ -14,9 +14,11 @@ import {
   Info,
   AlertCircle,
   MapPin,
+  Flag,
 } from "lucide-react";
 import { formatTime } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ReportNotHereDialog } from "@/components/report-not-here-dialog";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { cn } from "@/lib/utils";
 import { DayPicker } from "@/components/day-picker";
@@ -215,6 +217,21 @@ export function MapView({
                           <MapPin className="h-4 w-4 shrink-0" />
                           Get Directions
                         </a>
+                        <div className="mt-2">
+                          <ReportNotHereDialog
+                            service={service}
+                            triggerElement={
+                              <a
+                                href="#"
+                                onClick={(e) => e.stopPropagation()}
+                                className="flex items-center gap-2 text-blue-600 hover:underline"
+                              >
+                                <Flag className="h-4 w-4 shrink-0" />
+                                Report Not Here
+                              </a>
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
                   </InfoWindow>
