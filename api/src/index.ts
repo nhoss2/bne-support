@@ -13,17 +13,17 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-app.use(
-  "/api/*",
-  cors({
-    origin: [
-      "http://localhost:5173", // Vite dev server
-      "https://www.brisbanesupport.org",
-      "https://brisbanesupport.org",
-    ],
-    allowMethods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+const corsConfig = cors({
+  origin: [
+    "http://localhost:5173", // Vite dev server
+    "https://www.brisbanesupport.org",
+    "https://brisbanesupport.org",
+  ],
+  allowMethods: ["GET", "POST", "PUT", "DELETE"],
+});
+
+app.use("/api/*", corsConfig);
+app.use("/admin/api/*", corsConfig);
 
 const reportSchema = z.object({
   serviceId: z.string().min(1),
