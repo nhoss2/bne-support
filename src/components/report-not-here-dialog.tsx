@@ -28,11 +28,11 @@ export function ReportNotHereDialog({
 
   const handleSubmit = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8787';
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8787";
       const response = await fetch(`${apiUrl}/api/reports`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           serviceId: service.id,
@@ -46,17 +46,18 @@ export function ReportNotHereDialog({
 
       if (response.ok) {
         toast.success("Report submitted successfully", {
-          description: "Thank you for helping us keep the information accurate!"
+          description:
+            "Thank you for helping us keep the information accurate!",
         });
       } else {
         toast.error("Failed to submit report", {
-          description: "Please try again later"
+          description: "Please try again later",
         });
       }
     } catch (error) {
-      console.error('Error submitting report:', error);
+      console.error("Error submitting report:", error);
       toast.error("Failed to submit report", {
-        description: "Please check your connection and try again"
+        description: "Please check your connection and try again",
       });
     }
 
