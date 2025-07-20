@@ -11,7 +11,7 @@ install deps
 npm install
 ```
 
-requires google maps api key in `.env` file
+requires google maps api key in `.env` file. (see .env.example)
 
 ## Run
 
