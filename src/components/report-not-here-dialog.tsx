@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Flag } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 interface ReportNotHereDialogProps {
   service: EventData;
@@ -44,12 +45,19 @@ export function ReportNotHereDialog({
       });
 
       if (response.ok) {
-        console.log('Report submitted successfully');
+        toast.success("Report submitted successfully", {
+          description: "Thank you for helping us keep the information accurate!"
+        });
       } else {
-        console.error('Failed to submit report');
+        toast.error("Failed to submit report", {
+          description: "Please try again later"
+        });
       }
     } catch (error) {
       console.error('Error submitting report:', error);
+      toast.error("Failed to submit report", {
+        description: "Please check your connection and try again"
+      });
     }
 
     setDialogOpen(false);

@@ -9,6 +9,7 @@ import { DayPicker } from "@/components/day-picker";
 import { ServiceTypePicker } from "@/components/service-type-picker";
 import { DAYS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import { Map, List } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
@@ -242,6 +243,7 @@ function App() {
       </div>
 
       <ViewToggle showMap={showMap} onToggle={setShowMap} />
+      <Toaster position="top-center" richColors />
     </div>
   );
 }
