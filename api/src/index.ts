@@ -26,7 +26,6 @@ app.use("/api/*", corsConfig);
 app.use("/admin/api/*", corsConfig);
 
 const reportSchema = z.object({
-  serviceId: z.string().min(1),
   serviceName: z.string().min(1),
   serviceAddress: z.string().optional(),
   serviceLatitude: z.number().optional(),
@@ -49,7 +48,6 @@ app.post("/api/reports", zValidator("json", reportSchema), async (c) => {
     const validated = c.req.valid("json");
 
     const newReport: NewReport = {
-      serviceId: validated.serviceId,
       serviceName: validated.serviceName,
       serviceAddress: validated.serviceAddress || null,
       serviceLatitude: validated.serviceLatitude || null,
@@ -134,7 +132,6 @@ app.get("/admin/", async (c) => {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Service ID</th>
                 <th>Service Name</th>
                 <th>Address</th>
                 <th>Coordinates</th>
@@ -148,7 +145,6 @@ app.get("/admin/", async (c) => {
                 (report) => html`
                   <tr>
                     <td>${report.id}</td>
-                    <td>${report.serviceId}</td>
                     <td>${report.serviceName}</td>
                     <td>
                       ${report.serviceAddress || html`<em>No address</em>`}

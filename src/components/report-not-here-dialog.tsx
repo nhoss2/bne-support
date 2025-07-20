@@ -35,7 +35,6 @@ export function ReportNotHereDialog({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          serviceId: service.id,
           serviceName: service.name,
           serviceAddress: service.location.address,
           serviceLatitude: service.location.coordinates?.lat,

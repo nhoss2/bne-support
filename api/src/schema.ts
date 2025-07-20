@@ -2,7 +2,6 @@ import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 
 export const reports = sqliteTable("reports", {
   id: integer("id").primaryKey(),
-  serviceId: text("service_id").notNull(),
   serviceName: text("service_name").notNull(),
   serviceAddress: text("service_address"),
   serviceLatitude: real("service_latitude"),
