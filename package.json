@@ -8,7 +8,7 @@
     "dev:api": "wrangler dev api/src/index.ts --port 8787",
     "dev:both": "concurrently \"npm run dev\" \"npm run dev:api\"",
     "build": "tsc -b && vite build",
-    "deploy:api": "npx drizzle-kit migrate && wrangler deploy api/src/index.ts",
+    "deploy:api": "wrangler d1 migrations apply bne-support-db --remote && wrangler deploy api/src/index.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
