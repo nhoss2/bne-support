@@ -8,7 +8,7 @@
     "dev:api": "wrangler dev api/src/index.ts --port 8787",
     "dev:both": "concurrently \"npm run dev\" \"npm run dev:api\"",
     "build": "tsc -b && vite build",
-    "deploy:api": "wrangler deploy api/src/index.ts",
+    "deploy:api": "npx drizzle-kit migrate && wrangler deploy api/src/index.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "geocode": "tsx scripts/geocode-locations.ts"

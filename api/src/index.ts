@@ -63,7 +63,8 @@ app.post('/api/reports', zValidator('json', reportSchema), async (c) => {
   }
 });
 
-app.get('/api/reports', async (c) => {
+// Admin API endpoints
+app.get('/admin/api/reports', async (c) => {
   try {
     const db = getDb(c.env);
     const allReports = await db.select().from(reports).orderBy(reports.reportedAt);
@@ -74,7 +75,7 @@ app.get('/api/reports', async (c) => {
   }
 });
 
-app.get('/admin', async (c) => {
+app.get('/admin/', async (c) => {
   try {
     const db = getDb(c.env);
     const allReports = await db.select().from(reports).orderBy(reports.reportedAt);
