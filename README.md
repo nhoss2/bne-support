@@ -1,4 +1,4 @@
-# BNE Support Services app
+# Brisbane Support Services app
 
 Uses Vite, React, Shadcn, Tailwind and TypeScript
 

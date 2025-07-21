@@ -38,7 +38,7 @@ const reportSchema = z.object({
 });
 
 app.get("/", (c) => {
-  return c.text("BNE Support API");
+  return c.text("Brisbane Support API");
 });
 
 app.get("/api/health", (c) => {
@@ -98,7 +98,7 @@ app.get("/admin/", async (c) => {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>BNE Support - Reports Admin</title>
+          <title>Brisbane Support - Reports Admin</title>
           <style>
             body {
               font-family: system-ui, sans-serif;
@@ -247,7 +247,7 @@ async function runDailySummary(env: Bindings) {
 
   const resend = new Resend(env.RESEND_API_KEY);
   await resend.emails.send({
-    from: "BNE Support <mail@brisbanesupport.org>",
+    from: "Brisbane Support <mail@brisbanesupport.org>",
     to: ["feedback@brisbanesupport.org", "brisbanesupport@labs.im"],
     subject: `Daily Report Summary (${newReports.length} new)`,
     html: htmlBody,
