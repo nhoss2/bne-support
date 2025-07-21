@@ -1,0 +1,1 @@
+ALTER TABLE `reports` ADD `summary_sent` integer DEFAULT 0 NOT NULL;

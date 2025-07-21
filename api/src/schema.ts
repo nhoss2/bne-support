@@ -11,6 +11,7 @@ export const reports = sqliteTable("reports", {
     .notNull()
     .$defaultFn(() => new Date().toISOString()),
   userIp: text("user_ip"),
+  summarySent: integer("summary_sent").notNull().default(0),
 });
 
 export type Report = typeof reports.$inferSelect;

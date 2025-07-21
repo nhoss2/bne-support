@@ -6,9 +6,13 @@ import { z } from "zod";
 import { getDb } from "./db";
 import { reports } from "./schema";
 import type { NewReport } from "./schema";
+import { Resend } from "resend";
+import type { ScheduledEvent } from "@cloudflare/workers-types";
+import { eq, inArray } from "drizzle-orm";
 
 type Bindings = {
   DB: D1Database;
+  RESEND_API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -176,3 +180,86 @@ app.get("/admin/", async (c) => {
 });
 
 export default app;
+
+export async function scheduled(event: ScheduledEvent, env: Bindings) {
+  event.waitUntil(runDailySummary(env));
+}
+
+async function runDailySummary(env: Bindings) {
+  const db = getDb(env);
+  const newReports = await db
+    .select()
+    .from(reports)
+    .where(eq(reports.summarySent, 0));
+
+  if (newReports.length === 0) return;
+
+  const body = newReports
+    .map((r) =>
+      [
+        `• [${r.id}] ${r.serviceName}`,
+        r.serviceAddress ? `@ ${r.serviceAddress}` : undefined,
+        r.serviceLatitude != null && r.serviceLongitude != null
+          ? `(${r.serviceLatitude},${r.serviceLongitude})`
+          : undefined,
+        r.comment ? `"${r.comment}"` : undefined,
+        `IP:${r.userIp}`,
+        new Date(r.reportedAt).toLocaleString(),
+      ]
+        .filter((part): part is string => Boolean(part))
+        .join(" ")
+    )
+    .join("\n");
+
+  // Build a basic HTML table for the email
+  const htmlRows = newReports
+    .map(
+      (r) => `
+    <tr>
+      <td> ${r.id}</td>
+      <td>${r.serviceName}</td>
+      <td>${r.serviceAddress ?? "No address"}</td>
+      <td>${
+        r.serviceLatitude != null && r.serviceLongitude != null
+          ? `${r.serviceLatitude}, ${r.serviceLongitude}`
+          : "No coordinates"
+      }</td>
+      <td>${r.comment ?? "No comment"}</td>
+      <td>${r.userIp}</td>
+      <td>${new Date(r.reportedAt).toLocaleString()}</td>
+    </tr>
+  `
+    )
+    .join("");
+
+  const htmlBody = `
+    <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+      <thead>
+        <tr>
+          <th>ID</th><th>Service Name</th><th>Address</th><th>Coordinates</th><th>Comment</th><th>User IP</th><th>Reported At</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${htmlRows}
+      </tbody>
+    </table>
+  `;
+
+  const resend = new Resend(env.RESEND_API_KEY);
+  await resend.emails.send({
+    from: "BNE Support <mail@brisbanesupport.org>",
+    to: ["feedback@brisbanesupport.org", "brisbanesupport@labs.im"],
+    subject: `Daily Report Summary (${newReports.length} new)`,
+    html: htmlBody,
+    text: body,
+  });
+
+  const ids = newReports.map((r) => r.id);
+  await db
+    .update(reports)
+    .set({ summarySent: 1 })
+    .where(inArray(reports.id, ids))
+    .run();
+
+  console.log(`Sent daily summary for ${ids.length} reports.`);
+}

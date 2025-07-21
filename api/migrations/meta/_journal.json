@@ -22,6 +22,13 @@
       "when": 1752992147566,
       "tag": "0002_unusual_living_tribunal",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1753110324020,
+      "tag": "0003_tan_microchip",
+      "breakpoints": true
     }
   ]
 }
