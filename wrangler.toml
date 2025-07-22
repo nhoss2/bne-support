@@ -5,7 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 minify = true
 
 [triggers]
-crons = ["0 9 * * *"]
+crons = ["0 12 * * *"]
 
 [[d1_databases]]
 binding = "DB"
@@ -15,3 +15,6 @@ migrations_dir = "api/migrations"
 
 [env.development]
 name = "bne-support-api-dev"
+
+[observability.logs]
+enabled = true

@@ -179,11 +179,17 @@ app.get("/admin/", async (c) => {
   }
 });
 
-export default app;
+// Export both HTTP handling and cron handler in one object so Cloudflare
+// can detect the `scheduled` entry point in production.
+export default {
+  // Hono handles regular HTTP requests
+  fetch: app.fetch,
 
-export async function scheduled(event: ScheduledEvent, env: Bindings) {
-  event.waitUntil(runDailySummary(env));
-}
+  // Cron trigger handler
+  async scheduled(event: ScheduledEvent, env: Bindings) {
+    event.waitUntil(runDailySummary(env));
+  },
+};
 
 async function runDailySummary(env: Bindings) {
   const db = getDb(env);
