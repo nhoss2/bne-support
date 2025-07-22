@@ -192,7 +192,10 @@ async function runDailySummary(env: Bindings) {
     .from(reports)
     .where(eq(reports.summarySent, 0));
 
-  if (newReports.length === 0) return;
+  if (newReports.length === 0) {
+    console.log("No new reports to send summary for");
+    return;
+  }
 
   const body = newReports
     .map((r) =>
