@@ -186,8 +186,8 @@ export default {
   fetch: app.fetch,
 
   // Cron trigger handler
-  async scheduled(event: ScheduledEvent, env: Bindings) {
-    event.waitUntil(runDailySummary(env));
+  async scheduled(event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) {
+    ctx.waitUntil(runDailySummary(env));
   },
 };
 
